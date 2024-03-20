@@ -1,4 +1,4 @@
-ase:
+base:
   project: winequality-project
   random_state: 42
   target_col: TARGET
