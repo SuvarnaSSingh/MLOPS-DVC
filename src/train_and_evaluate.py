@@ -19,10 +19,12 @@ import json
 
 
 def eval_metrics (actual ,predicted):
-    rmse=
-    mae=
-    r2=
-    return rmse,mae,r2
+
+    rmse = np.sqrt(mean_squared_error(actual, predicted))
+    mae = mean_absolute_error(actual, predicted)
+    r2 = r2_score(actual, predicted)
+    return rmse, mae, r2
+  
 
 def train_and_evaluate(config_path):
     config=read_params(config_path)
@@ -47,9 +49,36 @@ def train_and_evaluate(config_path):
 
     lr= ElasticNet(alpha=alpha,l1_ratio=l1_ratio,random_state=random_State)
 
+    
+
     lr.fit(train_x,train_y)
     predicted_qualities=lr.predict(test_x)
     (rmse,mae,r2)=eval_metrics(test_y,predicted_qualities)
+
+    print("Elastic Model (alpha=%f ,l1_ratio=%f) :" %(alpha,l1_ratio))
+    print("RMSE: %s" %rmse)
+    print( "Mae : %s " %mae)
+    print("R2 score %s :"%r2)
+
+    scores_file =config["reports"]["scores"]
+    parame_file=config["reports"]["params"]
+
+    with open(scores_file,"w") as f:
+        scores={
+            "rmse":rmse,
+            "mae":mae,
+            "r2":r2
+        }
+
+        json.dump(scores,f,indent=4)
+
+    with open(parame_file,"w") as f:
+        param={
+            "alpha":alpha,
+            "l1_ratio":l1_ratio,
+          
+        }    
+        json.dump(param,f,indent=4) 
 
 
 
